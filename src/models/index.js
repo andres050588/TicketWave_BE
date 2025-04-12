@@ -1,5 +1,6 @@
+import User from "./Users.js"
 import Ticket from "./Ticket.js"
 
-const db = { Ticket }
+const db = { User, Ticket }
 
 export default db

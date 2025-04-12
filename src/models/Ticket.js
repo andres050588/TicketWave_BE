@@ -17,6 +17,10 @@ const Ticket = sequelize.define(
             type: DataTypes.FLOAT,
             allowNull: false
         },
+        eventDate: {
+            type: DataTypes.DATE,
+            allowNull: false
+        },
         status: {
             type: DataTypes.ENUM("disponibile", "impegnato", "acquistato"),
             defaultValue: "disponibile"
