@@ -75,8 +75,8 @@ Presto disponibile un file `docker-compose.yml` per far partire l'intera app con
 -   [x] Connessione a MySQL via Sequelize
 -   [x] Creazione modello Ticket
 -   [x] Endpoint GET `/api/tickets`
--   [ ] Endpoint POST `/api/tickets`
--   [ ] Login & JWT token
+-   [x] Endpoint POST `/api/tickets`
+-   [x] Login & JWT token
 -   [ ] Upload immagini (Cloudinary)
 -   [ ] Docker + Kubernetes
 -   [ ] Migrazione a microservizi
