@@ -10,7 +10,7 @@ Sviluppato in Node.js con Express, Sequelize e MySQL. Pronto per Docker e Kubern
 -   **Node.js + Express** – REST API
 -   **Sequelize** – ORM per MySQL
 -   **MySQL** – Database relazionale
--   **JWT** – Autenticazione utente (prossimi step)
+-   **JWT** – Autenticazione utente 
 -   **Cloudinary + Multer** – Upload immagini biglietti (prossimi step)
 -   **Nodemon** – Dev mode
 -   **Docker/Kubernetes** – Deployment e orchestrazione (prossimi step)
@@ -56,6 +56,7 @@ JWT_SECRET=yourJWTpass
 | POST   | `/api/tickets`  | Pubblica un nuovo biglietto (prossimi passi)   |
 | POST   | `/api/register` | Registrazione utente (prossimi passi)          |
 | POST   | `/api/login`    | Login utente (prossimi passi)                  |
+| GET    | `/api/profile`  | Ritorna info dell’utente loggato               |
 | GET    | `/api/orders`   | Visualizza ordini dell’utente (prossimi passi) |
 
 ---
