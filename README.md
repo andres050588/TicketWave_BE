@@ -27,7 +27,7 @@ backend/
 │   ├── models/          # Modelli Sequelize
 │   ├── routes/          # Endpoints REST
 │   └── index.js         # Entry point
-├── .env.                # Variabili ambiente (template)
+├── .env                 # Variabili ambiente (template)
 ├── .gitignore
 └── package.json
 ```
@@ -53,9 +53,9 @@ JWT_SECRET=yourJWTpass
 | Metodo | Rotta           | Descrizione                                    |
 | ------ | --------------- | ---------------------------------------------- |
 | GET    | `/api/tickets`  | Elenco biglietti disponibili                   |
-| POST   | `/api/tickets`  | Pubblica un nuovo biglietto (prossimi passi)   |
-| POST   | `/api/register` | Registrazione utente (prossimi passi)          |
-| POST   | `/api/login`    | Login utente (prossimi passi)                  |
+| POST   | `/api/tickets`  | Pubblica un nuovo biglietto (protetto jwt)     |
+| POST   | `/api/register` | Registrazione utente                           |
+| POST   | `/api/login`    | Login utente (ritorna jwt)                     |
 | GET    | `/api/profile`  | Ritorna info dell’utente loggato               |
 | GET    | `/api/orders`   | Visualizza ordini dell’utente (prossimi passi) |
 
@@ -84,4 +84,4 @@ Presto disponibile un file `docker-compose.yml` per far partire l'intera app con
 
 ---
 
-sviluppato da AndresB(https://github.com/andres050588)
+sviluppato da [AndreiB](https://github.com/andres050588)
