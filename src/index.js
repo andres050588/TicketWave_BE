@@ -13,14 +13,14 @@ const app = express()
 //midleware
 app.use(cors())
 app.use(express.json())
-app.use("/api", routes) //rotte API
+app.use(routes) //rotte API
 
 try {
     await sequelize.authenticate()
     console.log("Connessione al database riuscita!")
     await sequelize.sync({ alter: true }) // aggiorna DB se modifico i modelli
 } catch (error) {
-    console.log("Errore nella conessione al DB:", err)
+    console.log("Errore nella conessione al DB:", error)
 }
 
 app.listen(process.env.PORT, () => {

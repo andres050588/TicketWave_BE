@@ -14,9 +14,10 @@ export const availableTickets = async (req, res) => {
 
 export const createTicket = async (request, response) => {
     try {
-        const { title, price, eventDate, userId } = request.body
+        const { title, price, eventDate } = request.body
+        const userId = request.user.userId // preso dal token JWT
 
-        if (!title || !price || !userId || !eventDate) {
+        if (!title || !price || !eventDate) {
             // validazione dei campi
             return response.status(400).json({ message: "Campi obligatori mancanti" })
         }
@@ -43,12 +44,12 @@ export const createTicket = async (request, response) => {
             hour: "2-digit",
             minute: "2-digit"
         })
-        response.status(201).json({
+        return response.status(201).json({
             id: newTicket.id,
             createdAt: createdAtFormatted
         })
     } catch (error) {
         console.error("Errore durante la creazione del biglietto:", error)
-        response.status(500).json({ error: "Errore proveniente dal server" })
+        return response.status(500).json({ error: "Errore proveniente dal server" })
     }
 }

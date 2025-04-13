@@ -1,7 +1,8 @@
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import User from "../models/Users.js"
+import User from "../models/User.js"
 
+// -----------------------------logica di registrazzione
 export const register = async (request, response) => {
     try {
         const { name, email, password } = request.body
@@ -11,7 +12,7 @@ export const register = async (request, response) => {
         // Controllo se l'user esistesse gia
         const existingUser = await User.findOne({ where: { email } })
         if (existingUser) {
-            return response.status(409).json({ error: "User gia registrato" })
+            return response.status(409).json({ error: "User gia esistente" })
         }
         // Criptazzione password
         const hashedPassword = await bcrypt.hash(password, 10)
@@ -23,9 +24,66 @@ export const register = async (request, response) => {
 
         const token = jwt.sign({ userId: user.id, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" })
 
-        response.status(201).json({ token })
+        return response.status(201).json({ token })
     } catch (error) {
         console.error("Errore durante la registrazione: ", error)
-        response.status(500).json({ error: "Errore server" })
+        return response.status(500).json({ error: "Errore server" })
+    }
+}
+
+// -----------------------------Logica di login
+export const login = async (request, response) => {
+    console.log("Ricevuta richiesta login:", request.body)
+    try {
+        const { email, password } = request.body
+        if (!email || !password) {
+            return response.status(400).json({ error: "Email e password sono obligatorie" })
+        }
+
+        const user = await User.findOne({ where: { email } })
+        if (!user) {
+            return response.status(401).json({ error: "Email o password non validi" })
+        }
+
+        const passwordMatch = await bcrypt.compare(password, user.password)
+        if (!passwordMatch) {
+            return response.status(401).json({ error: "Email o password non validi" })
+        }
+
+        const token = jwt.sign({ userId: user.id, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" })
+        return response.status(200).json({ token })
+    } catch (error) {
+        console.error("Errore nel login", error.message)
+        return response.status(500).json({ error: error.message })
+    }
+}
+
+export const userProfile = async (request, response) => {
+    try {
+        const userId = request.user.userId
+        const user = await User.findByPk(userId, {
+            attributes: ["id", "name", "email", "createdAt"]
+        })
+        if (!user) {
+            return response.status(404).json({ error: "Utente non trovato" })
+        }
+
+        const formattedCreatedAt = user.createdAt.toLocaleString("it-IT", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        })
+
+        return response.json({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            createdAt: formattedCreatedAt
+        })
+    } catch (error) {
+        console.error("Errore nel recupero del profilo")
+        return response.status(500).json({ error: "Errore server" })
     }
 }
