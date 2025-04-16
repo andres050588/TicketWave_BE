@@ -50,14 +50,18 @@ JWT_SECRET=yourJWTpass
 
 ## Endpoints
 
-| Metodo | Rotta           | Descrizione                                    |
-| ------ | --------------- | ---------------------------------------------- |
-| GET    | `/api/tickets`  | Elenco biglietti disponibili                   |
-| POST   | `/api/tickets`  | Pubblica un nuovo biglietto (protetto jwt)     |
-| POST   | `/api/register` | Registrazione utente                           |
-| POST   | `/api/login`    | Login utente (ritorna jwt)                     |
-| GET    | `/api/profile`  | Ritorna info dell’utente loggato               |
-| GET    | `/api/orders`   | Visualizza ordini dell’utente (prossimi passi) |
+| Metodo | Rotta                     | Descrizione                                                    |
+| ------ | ------------------------- | -------------------------------------------------------------- |
+| GET    | `/api/tickets`            | Elenco biglietti disponibili                                   |
+| POST   | `/api/tickets`            | Pubblica un nuovo biglietto (protetto jwt)                     |
+| POST   | `/api/register`           | Registrazione utente                                           |
+| POST   | `/api/login`              | Login utente (ritorna jwt)                                     |
+| GET    | `/api/profile`            | Ritorna info dell’utente loggato                               |
+| GET    | `/api/orders`             | Visualizza ordini dell’utente (prossimi passi)                 |
+| POST   | `/api/orders`             | Crea un nuovo ordine per un biglietto dispon.                  |
+| POST   | `/api/orders/:id/complete`| Conclude lâ€™ordine (passa da impegnato a acquistato)          |
+| GET    | `/api/orders`             | ista degli ordini dell'utente loggato con i dettagli ticket    |
+
 
 ---
 
