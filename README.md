@@ -22,12 +22,14 @@ Sviluppato in Node.js con Express, Sequelize e MySQL. Pronto per Docker e Kubern
 ```
 backend/
 ├── src/
-│   ├── config/          # Configurazione DB, Cloudinary, ecc.
-│   ├── controllers/     # Logica API
-│   ├── models/          # Modelli Sequelize
-│   ├── routes/          # Endpoints REST
-│   └── index.js         # Entry point
-├── .env                 # Variabili ambiente (template)
+│   ├── config/                    # Configurazione DB, Cloudinary, ecc.
+│   ├── controllers/               # Logica API
+│   ├── models/                    # Modelli Sequelize
+│   ├── routes/                    # Endpoints REST
+│   └── utils/                     # Funzioni riutilizzabili
+│      └── cleanupExpiredOrders.js # Pulizia automatica degli ordini scaduti
+│   └── index.js                   # Entry point
+├── .env                           # Variabili ambiente (template)
 ├── .gitignore
 └── package.json
 ```
