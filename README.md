@@ -59,7 +59,7 @@ JWT_SECRET=yourJWTpass
 | GET    | `/api/profile`            | Ritorna info dell’utente loggato                               |
 | GET    | `/api/orders`             | Visualizza ordini dell’utente (prossimi passi)                 |
 | POST   | `/api/orders`             | Crea un nuovo ordine per un biglietto dispon.                  |
-| POST   | `/api/orders/:id/complete`| Conclude lâ€™ordine (passa da impegnato a acquistato)          |
+| POST   | `/api/orders/:id/complete`| Conclude il ordine (passa da impegnato a acquistato)           |
 
 
 ---
