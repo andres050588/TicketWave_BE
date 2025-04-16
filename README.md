@@ -81,6 +81,11 @@ Presto disponibile un file `docker-compose.yml` per far partire l'intera app con
 -   [x] Endpoint GET `/api/tickets`
 -   [x] Endpoint POST `/api/tickets`
 -   [x] Login & JWT token
+-   [x] Profilo utente autenticato `/api/profile`  
+-   [x] Gestione ordini:  
+    -   [x] Crea ordine `POST /api/orders`  
+    -   [x] Completa ordine `POST /api/orders/:id/complete`  
+    -   [x] Lista ordini utente `GET /api/orders
 -   [ ] Upload immagini (Cloudinary)
 -   [ ] Docker + Kubernetes
 -   [ ] Migrazione a microservizi
