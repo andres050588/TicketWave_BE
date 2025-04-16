@@ -58,6 +58,8 @@ export const login = async (request, response) => {
     }
 }
 
+// -----------------------------User profile (dati del profilo logato)
+
 export const userProfile = async (request, response) => {
     try {
         const userId = request.user.userId

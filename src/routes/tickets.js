@@ -1,11 +1,13 @@
 import express from "express"
-import { availableTickets, createTicket } from "../controllers/ticketController.js"
+import { createTicket, availableTickets, getMyTickets } from "../controllers/ticketController.js"
 import { verifyToken } from "../middleware/authMiddleware.js"
 
-const router = express.Router()
+const routerTickets = express.Router()
 
+routerTickets.post("/tickets", verifyToken, createTicket)
 // GET /api/tickets - ritorna tutti i biglietti disponibili da ../controllers/ticketController.js
-router.get("/tickets", availableTickets)
-router.post("/tickets", verifyToken, createTicket)
+routerTickets.get("/tickets", availableTickets)
+// Lista dei biglietti dell'utente loggato
+routerTickets.get("/mytickets", verifyToken, getMyTickets)
 
-export default router
+export default routerTickets

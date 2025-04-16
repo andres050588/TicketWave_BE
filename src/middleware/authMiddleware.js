@@ -20,7 +20,7 @@ export const verifyToken = (request, response, next) => {
 
     try {
         const decoded = jwt.verify(accessToken, process.env.JWT_SECRET)
-        request.user = decoded // contiene dati del user per usarli in sicurezza in file controllers
+        request.user = decoded // decodifica i dati del user(userId, email, name) per usarli in sicurezza in file controllers
         next()
     } catch (error) {
         return response.status(403).json({ error: "Token non valido" })
