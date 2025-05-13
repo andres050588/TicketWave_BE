@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import User from "../models/User.js"
+import { isAdmin } from "../middleware/isAdmin.js" // per funzioni future
 
 // -----------------------------logica di registrazzione
 export const register = async (request, response) => {
@@ -22,7 +23,7 @@ export const register = async (request, response) => {
             password: hashedPassword
         })
 
-        const token = jwt.sign({ userId: user.id, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" })
+        const token = jwt.sign({ userId: user.id, name: user.name, email: user.email, isAdmin: user.isAdmin }, process.env.JWT_SECRET, { expiresIn: "1h" })
 
         return response.status(201).json({ token })
     } catch (error) {
@@ -33,7 +34,6 @@ export const register = async (request, response) => {
 
 // -----------------------------Logica di login
 export const login = async (request, response) => {
-    console.log("Ricevuta richiesta login:", request.body)
     try {
         const { email, password } = request.body
         if (!email || !password) {
@@ -50,7 +50,7 @@ export const login = async (request, response) => {
             return response.status(401).json({ error: "Email o password non validi" })
         }
 
-        const token = jwt.sign({ userId: user.id, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" })
+        const token = jwt.sign({ userId: user.id, name: user.name, email: user.email, isAdmin: user.isAdmin }, process.env.JWT_SECRET, { expiresIn: "1h" })
         return response.status(200).json({ token })
     } catch (error) {
         console.error("Errore nel login", error.message)
@@ -70,19 +70,16 @@ export const userProfile = async (request, response) => {
             return response.status(404).json({ error: "Utente non trovato" })
         }
 
-        const formattedCreatedAt = user.createdAt.toLocaleString("it-IT", {
+        const formattedDate = user.createdAt.toLocaleDateString("it-IT", {
             day: "2-digit",
             month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
+            year: "numeric"
         })
-
         return response.json({
             id: user.id,
             name: user.name,
             email: user.email,
-            createdAt: formattedCreatedAt
+            createdAt: formattedDate
         })
     } catch (error) {
         console.error("Errore nel recupero del profilo")

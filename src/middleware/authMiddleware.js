@@ -11,6 +11,7 @@ const extractTokenFromHeader = authHeader => {
 
     return parts[1] // il vero token
 }
+
 export const verifyToken = (request, response, next) => {
     const accessToken = extractTokenFromHeader(request.headers.authorization)
 
@@ -25,4 +26,11 @@ export const verifyToken = (request, response, next) => {
     } catch (error) {
         return response.status(403).json({ error: "Token non valido" })
     }
+}
+
+export const verifyAdmin = (request, response, next) => {
+    if (!request.user.isAdmin) {
+        return response.status(403).json({ error: "Accesso riservato agli admin" })
+    }
+    next()
 }

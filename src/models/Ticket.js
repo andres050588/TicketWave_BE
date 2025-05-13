@@ -28,6 +28,10 @@ const Ticket = sequelize.define(
         userId: {
             type: DataTypes.UUID,
             allowNull: false
+        },
+        imageURL: {
+            type: DataTypes.STRING,
+            allowNull: true
         }
     },
     {

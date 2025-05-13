@@ -2,30 +2,22 @@ import Order from "../models/Orders.js"
 import Ticket from "../models/Ticket.js"
 import { Op } from "sequelize"
 
-export const createOrder = async (request, response) => {
+// CREA UN ORDINE
+export const createOrder = async (req, res) => {
     try {
-        const { ticketId } = request.body
-        const userId = request.user.userId
+        const { ticketId } = req.body
+        const userId = req.user.userId
 
-        if (!ticketId) {
-            return response.status(400).json({ error: "ticketId e obbligatorio" })
-        }
+        if (!ticketId) return res.status(400).json({ error: "ticketId è obbligatorio" })
 
-        // Scelta del biglietto
         const ticket = await Ticket.findByPk(ticketId)
-        if (!ticket) {
-            return response.status(404).json({ error: "Biglietto non trovato" })
-        }
-        if (ticket.status !== "disponibile") {
-            return response.status(400).json({ error: "Biglietto non disponibile" })
-        }
-        // Calcolo del tempo di scadenza dello status 'impegnato' 15 min
-        const expiresAt = new Date(Date.now() + 15 * 60 * 1000)
+        if (!ticket) return res.status(404).json({ error: "Biglietto non trovato" })
+        if (ticket.status !== "disponibile") return res.status(400).json({ error: "Biglietto non disponibile" })
 
-        // Assegnamento dello stato del biglietto 'impegnato'
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000) //scade fra 15 minuti
+
         await ticket.update({ status: "impegnato" })
 
-        // Creazione del ordine
         const order = await Order.create({
             userId,
             ticketId,
@@ -33,88 +25,91 @@ export const createOrder = async (request, response) => {
             expiresAt
         })
 
-        return response.status(201).json({
+        res.status(201).json({
             orderId: order.id,
             ticketId: ticket.id,
             expiresAt
         })
     } catch (error) {
-        console.log("Errore durante la creazione dell'ordine:", error)
-        response.status(500).json({ error: "Errore interno del server" })
+        console.error("Errore durante la creazione dell'ordine:", error)
+        res.status(500).json({ error: "Errore interno del server" })
     }
 }
 
-export const getUserOrders = async (request, response) => {
+// ORDINI DELL'UTENTE
+export const getUserOrders = async (req, res) => {
     try {
-        const userId = request.user.userId
+        const userId = req.user.userId
+        const nowMinus2Min = new Date(Date.now() - 2 * 60 * 1000)
 
         const orders = await Order.findAll({
-            where: { userId },
+            where: {
+                userId,
+                [Op.or]: [{ status: { [Op.not]: "impegnato" } }, { status: "impegnato", expiresAt: { [Op.gte]: nowMinus2Min } }]
+            },
             include: [
                 {
                     model: Ticket,
+                    as: "Ticket",
                     attributes: ["title", "price", "status", "eventDate"]
                 }
             ],
             order: [["createdAt", "DESC"]]
         })
-        return response.json(orders)
+
+        res.json(orders)
     } catch (error) {
-        console.log("Errore nel recupero degli ordini:", error.message)
-        return response.status(500).json({ error: "Erroreinterno del server" })
+        console.error("Errore nel recupero degli ordini:", error)
+        res.status(500).json({ error: "Errore interno del server" })
     }
 }
 
-export const releaseExpiredOrders = async () => {
+// ANNULLA ORDINE
+export const cancelOrder = async (req, res) => {
     try {
-        const expiredOrders = await Order.findAll({
-            where: {
-                status: "impegnato",
-                expiresAt: { [Op.lt]: new Date() }
-            },
-            include: Ticket
-        })
+        const orderId = req.params.id
+        const userId = req.user.userId
 
-        for (const order of expiredOrders) {
-            // Aggiornamento ticket a 'disponibile'
-            await order.Ticket.update({ status: "disponibile" })
-            // Cambio stato di ordine
-            await order.update({ status: "scaduto" })
-            console.log(`Ordine scaduto liberato: ${order.id}`)
-        }
+        const order = await Order.findByPk(orderId)
+        if (!order) return res.status(404).json({ error: "Ordine non trovato" })
+        if (order.userId !== userId) return res.status(403).json({ error: "Accesso negato all'ordine" })
+        if (order.status !== "impegnato") return res.status(400).json({ error: "Solo ordini 'impegnato' possono essere annullati" })
+
+        const ticket = await Ticket.findByPk(order.ticketId)
+        if (ticket) await ticket.update({ status: "disponibile" })
+
+        await order.destroy()
+        res.json({ message: "Ordine annullato e biglietto disponibile" })
     } catch (error) {
-        console.error("Errore durante rilascio ordini scaduti:", error)
+        console.error("Errore nell'annullamento ordine:", error)
+        res.status(500).json({ error: "Errore server" })
     }
 }
 
-export const completeOrder = async (request, response) => {
+// COMPLETA ORDINE
+export const completeOrder = async (req, res) => {
     try {
-        const { id } = request.params
-        const userId = request.user.userId
+        const { id } = req.params
+        const userId = req.user.userId
 
         const order = await Order.findOne({
             where: { id, userId },
-            include: Ticket
+            include: [
+                {
+                    model: Ticket,
+                    as: "Ticket"
+                }
+            ]
         })
 
-        if (!order) {
-            return response.status(404).json({ error: "Ordine non trovato" })
-        }
+        if (!order) return res.status(404).json({ error: "Ordine non trovato" })
+        if (order.status !== "impegnato") return res.status(400).json({ error: "Ordine non disponibile per completamento" })
+        if (new Date(order.expiresAt) < new Date()) return res.status(400).json({ error: "Ordine scaduto" })
 
-        if (order.status !== "impegnato") {
-            return response.status(400).json({ error: "Ordine non in stato disponibile per il completamento" })
-        }
-
-        //La verifica se e scaduto
-        if (new Date(order.expiresAt) < new Date()) {
-            return response.status(400).json({ error: "Ordine scaduto" })
-        }
-
-        //Aggiorna stato ordine e ticket
         await order.update({ status: "acquistato" })
         await order.Ticket.update({ status: "acquistato" })
 
-        return response.status(200).json({
+        res.status(200).json({
             message: "Ordine completato con successo",
             orderId: order.id,
             ticket: {
@@ -123,7 +118,7 @@ export const completeOrder = async (request, response) => {
             }
         })
     } catch (error) {
-        console.error("Error nel completamento dell'ordine:", error)
-        response.status(500).json({ error: "Errore interno del server" })
+        console.error("Errore nel completamento ordine:", error)
+        res.status(500).json({ error: "Errore interno del server" })
     }
 }
