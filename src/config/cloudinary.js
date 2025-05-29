@@ -7,12 +7,10 @@ cloudinary.config({
     api_secret: process.env.CLOUD_API_SECRET
 })
 
-const storage = new CloudinaryStorage({
+export const storage = new CloudinaryStorage({
     cloudinary,
     params: {
         folder: "ticketwave-events",
         allowed_formats: ["jpg", "jpeg", "png"]
     }
 })
-
-export { cloudinary, storage }

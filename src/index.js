@@ -13,7 +13,8 @@ dotenv.config()
 const app = express()
 
 app.use(cors())
-app.use(express.json())
+//app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 app.use(routes) //rotte API
 
@@ -27,7 +28,7 @@ try {
     console.log("Errore nella conessione al DB:", error)
 }
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT, "0.0.0.0", () => {
     console.log(`Server listening on port ${process.env.PORT}`)
 
     // Esegui ogni minuto

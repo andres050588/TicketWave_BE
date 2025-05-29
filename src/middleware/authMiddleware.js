@@ -6,14 +6,15 @@ const extractTokenFromHeader = authHeader => {
     const parts = authHeader.split(" ")
 
     if (parts.length !== 2 || parts[0] !== "Bearer") {
-        return null // formato errato: tipo  "abc123" o "Bearerabc123"
+        return null // se formato errato: tipo  "abc123" o "Bearerabc123"
     }
 
     return parts[1] // il vero token
 }
 
 export const verifyToken = (request, response, next) => {
-    const accessToken = extractTokenFromHeader(request.headers.authorization)
+    const authHeader = request.headers.authorization
+    const accessToken = extractTokenFromHeader(authHeader)
 
     if (!accessToken) {
         return response.status(401).json({ error: "Token assente o malformato" })
@@ -21,9 +22,10 @@ export const verifyToken = (request, response, next) => {
 
     try {
         const decoded = jwt.verify(accessToken, process.env.JWT_SECRET)
-        request.user = decoded // decodifica i dati del user(userId, email, name) per usarli in sicurezza in file controllers
+        request.user = decoded
         next()
     } catch (error) {
+        console.error("❌ Errore nella verifica del token:", error.message)
         return response.status(403).json({ error: "Token non valido" })
     }
 }

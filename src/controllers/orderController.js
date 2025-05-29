@@ -51,7 +51,7 @@ export const getUserOrders = async (req, res) => {
                 {
                     model: Ticket,
                     as: "Ticket",
-                    attributes: ["title", "price", "status", "eventDate"]
+                    attributes: ["id", "title", "price", "status", "eventDate"]
                 }
             ],
             order: [["createdAt", "DESC"]]

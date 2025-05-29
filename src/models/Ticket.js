@@ -19,7 +19,11 @@ const Ticket = sequelize.define(
         },
         eventDate: {
             type: DataTypes.DATE,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+                isDate: true
+            }
         },
         status: {
             type: DataTypes.ENUM("disponibile", "impegnato", "acquistato"),
@@ -31,7 +35,7 @@ const Ticket = sequelize.define(
         },
         imageURL: {
             type: DataTypes.STRING,
-            allowNull: true
+            allowNull: false
         }
     },
     {

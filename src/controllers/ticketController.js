@@ -6,7 +6,11 @@ export const createTicket = async (req, res) => {
     try {
         const { title, price, eventDate } = req.body
         const userId = req.user.userId
-        const imageURL = req.file?.path || null
+
+        if (!req.file || !req.file.path) {
+            return res.status(400).json({ error: "L'immagine è obbligatoria" })
+        }
+        const imageURL = req.file?.path
 
         // Validazioni
         if (!title || !price || !eventDate) {
@@ -28,19 +32,27 @@ export const createTicket = async (req, res) => {
             userId
         })
 
+        const createdTicket = await Ticket.findByPk(newTicket.id, {
+            include: {
+                model: User,
+                as: "Seller",
+                attributes: ["id", "name", "email"]
+            }
+        })
+
         return res.status(201).json({
-            id: newTicket.id,
-            createdAt: newTicket.createdAt.toLocaleString("it-IT", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit"
-            })
+            id: createdTicket.id,
+            title: createdTicket.title,
+            price: createdTicket.price,
+            eventDate: createdTicket.eventDate,
+            imageURL: createdTicket.imageURL,
+            status: createdTicket.status,
+            createdAt: createdTicket.createdAt,
+            venditore: createdTicket.Seller
         })
     } catch (error) {
         console.error("Errore durante la creazione del biglietto:", error)
-        res.status(500).json({ error: "Errore del server" })
+        res.status(500).json({ error: "Errore del server", message: error.message, stack: error.stack })
     }
 }
 
@@ -67,6 +79,7 @@ export const availableTickets = async (req, res) => {
 }
 
 // DETTAGLIO BIGLIETTO PER ID
+
 export const getTicketById = async (req, res) => {
     try {
         const { id } = req.params
@@ -89,20 +102,9 @@ export const getTicketById = async (req, res) => {
             price: ticket.price,
             status: ticket.status,
             userId: ticket.userId,
-            createdAt: ticket.createdAt.toLocaleString("it-IT", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit"
-            }),
-            eventDate: ticket.eventDate.toLocaleString("it-IT", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit"
-            }),
+            createdAt: ticket.createdAt,
+            eventDate: ticket.eventDate,
+            imageURL: ticket.imageURL,
             venduto: ticket.status === "acquistato",
             venditore: {
                 id: ticket.Seller.id,
