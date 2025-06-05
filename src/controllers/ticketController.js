@@ -71,7 +71,23 @@ export const availableTickets = async (req, res) => {
             order: [["createdAt", "DESC"]]
         })
 
-        res.json(tickets)
+        const allTickets = tickets.map(ticket => ({
+            id: ticket.id,
+            title: ticket.title,
+            price: ticket.price,
+            status: ticket.status,
+            userId: ticket.userId,
+            createdAt: ticket.createdAt,
+            eventDate: ticket.eventDate,
+            imageURL: ticket.imageURL,
+            venditore: {
+                id: ticket.Seller.id,
+                name: ticket.Seller.name,
+                email: ticket.Seller.email
+            }
+        }))
+
+        res.json(allTickets)
     } catch (error) {
         console.error("Errore nel recupero dei biglietti disponibili:", error)
         res.status(500).json({ error: "Errore del server" })

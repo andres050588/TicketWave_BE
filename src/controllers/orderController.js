@@ -10,8 +10,16 @@ export const createOrder = async (req, res) => {
 
         if (!ticketId) return res.status(400).json({ error: "ticketId è obbligatorio" })
 
+        // Recupera il biglietto
         const ticket = await Ticket.findByPk(ticketId)
         if (!ticket) return res.status(404).json({ error: "Biglietto non trovato" })
+
+        // Verifica se l'utente è il venditore del biglietto
+        if (ticket.userId === userId) {
+            return res.status(403).json({ error: "Non puoi acquistare un tuo biglietto" })
+        }
+
+        // Verifica se il biglietto è disponibile
         if (ticket.status !== "disponibile") return res.status(400).json({ error: "Biglietto non disponibile" })
 
         const expiresAt = new Date(Date.now() + 15 * 60 * 1000) //scade fra 15 minuti
