@@ -8,12 +8,31 @@ import routes from "./routes/index.js"
 import { availableOrderTimer } from "./utils/availableOrderTimer.js"
 import { cleanUpExpiredOrders } from "./jobs/cleanUpExpiredOrders.js"
 
-dotenv.config()
+//dotenv.config()
 
 const app = express()
 
-app.use(cors())
-//app.use(express.json())
+const whiteList = [
+    "http://localhost:3000" // sviluppo locale
+    //"https://ticketwave.vercel.app"      dominio frontend su Vercel
+]
+
+app.use(
+    cors({
+        origin: (origin, corsNext) => {
+            if (!origin || whiteList.indexOf(origin) !== -1) {
+                // Se sei nella lista si passa
+                corsNext(null, true)
+            } else {
+                // Else errore
+                const err = new Error(`Origin (${origin}) non consentita`)
+                err.status = 403
+                corsNext(err)
+            }
+        },
+        credentials: true
+    })
+)
 app.use(express.urlencoded({ extended: true }))
 
 app.use(routes) //rotte API

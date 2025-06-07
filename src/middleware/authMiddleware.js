@@ -25,7 +25,7 @@ export const verifyToken = (request, response, next) => {
         request.user = decoded
         next()
     } catch (error) {
-        console.error("❌ Errore nella verifica del token:", error.message)
+        console.error(" Errore nella verifica del token:", error.message)
         return response.status(403).json({ error: "Token non valido" })
     }
 }
