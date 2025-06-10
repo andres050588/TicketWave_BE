@@ -13,8 +13,8 @@ import { cleanUpExpiredOrders } from "./jobs/cleanUpExpiredOrders.js"
 const app = express()
 
 const whiteList = [
-    "http://localhost:3000" // sviluppo locale
-    //"https://ticketwave.vercel.app"      dominio frontend su Vercel
+    process.env.FE_DEV_URL,
+    process.env.FE_PROD_URL // sviluppo locale,  dominio frontend su Vercel
 ]
 
 app.use(
