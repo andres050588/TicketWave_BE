@@ -40,13 +40,13 @@ backend/
 
 ## Comandi disponibili
 
-# Installazione dipendenze
+-   **Installazione dipendenze
 npm install
 
-# Avvio in sviluppo (con dotenv e hot reload)
+-   **Avvio in sviluppo (con dotenv e hot reload)
 npm run dev
 
-# Avvio in produzione
+-   **Avvio in produzione
 npm start
 
 ---
