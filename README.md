@@ -11,8 +11,9 @@ Sviluppato in Node.js con Express, Sequelize e MySQL. Pronto per Docker e Kubern
 -   **Sequelize** – ORM per MySQL
 -   **MySQL** – Database relazionale
 -   **JWT** – Autenticazione utente
+-   **Cors** – Gestione della comunicazione sicura tra BE e FE
 -   **Cloudinary + Multer** – Upload immagini biglietti (prossimi step)
--   **Nodemon** – Dev mode
+-   **Nodemon** – Svilupo in hot-reload
 -   **Docker/Kubernetes** – Deployment e orchestrazione (prossimi step)
 
 ---
@@ -22,17 +23,31 @@ Sviluppato in Node.js con Express, Sequelize e MySQL. Pronto per Docker e Kubern
 ```
 backend/
 ├── src/
-│   ├── config/                    # Configurazione DB, Cloudinary, ecc.
-│   ├── controllers/               # Logica API
+│   ├── config/                    # Configurazioni (DB, Cloudinary, ecc.)
+│   ├── controllers/               # Logica dei controller
 │   ├── models/                    # Modelli Sequelize
 │   ├── routes/                    # Endpoints REST
-│   └── utils/                     # Funzioni riutilizzabili
-│      └── cleanupExpiredOrders.js # Pulizia automatica degli ordini scaduti
-│   └── index.js                   # Entry point
-├── .env                           # Variabili ambiente (template)
+│   ├── utils/                     # Funzioni di utilità
+│   │   └── availableOrderTimer.js # Timer per ordini impegnati
+│   └── jobs/                      # Job automatici (cleanup ordini scaduti)
+│   └── index.js                   # Punto di ingresso dell'app
+├── .env                           # Variabili ambiente (esempio)
 ├── .gitignore
 └── package.json
 ```
+
+---
+
+## Comandi disponibili
+
+-   **Installazione dipendenze
+- npm install
+
+-   **Avvio in sviluppo (con dotenv e hot reload)
+- npm run dev
+
+-   **Avvio in produzione
+- npm start
 
 ---
 
@@ -46,6 +61,8 @@ MYSQLPASSWORD=YOUR_DB_PASSWORD
 MYSQLHOST=localhost
 MYSQLPORT=3306
 JWT_SECRET=yourJWTpass
+FE_DEV_URL=http://localhost:3000
+FE_PROD_URL=https://ticketwave-frontend.vercel.app
 ```
 
 ---
@@ -87,7 +104,7 @@ Presto disponibile un file `docker-compose.yml` per far partire l'intera app con
     -   [x] Crea ordine `POST /api/orders`
     -   [x] Completa ordine `POST /api/orders/:id/complete`
     -   [x] Lista ordini utente `GET /api/orders
--   [ ] Upload immagini (Cloudinary)
+-   [x] Upload immagini (Cloudinary)
 -   [ ] Docker + Kubernetes
 -   [ ] Migrazione a microservizi
 
