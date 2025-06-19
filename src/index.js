@@ -42,7 +42,7 @@ console.table(listEndpoints(app))
 try {
     await sequelize.authenticate()
     console.log("Connessione al database riuscita!")
-    await sequelize.sync() //se { force: true } aggiorna DB totalmente, cancellando tutto
+    await sequelize.sync({ force: true }) //se { force: true } aggiorna DB totalmente, cancellando tutto
 } catch (error) {
     console.log("Errore nella conessione al DB:", error)
 }
